@@ -1,34 +1,26 @@
-from os.path import join, isfile
-from os import getcwd, chdir
-from sys import argv
-from hashlib import md5, sha1, sha256
+from hashlib import md5, sha1, sha256, sha512
 from tabulate import tabulate
 
 
 class HashCheck(object):
-	BUF_SIZE = 65536
+	BUF_SIZE = 65_536
 
 	def __init__(self, check_file, hash_key):
+		from os.path import isfile
+		from os import getcwd
+
 		if not isfile(check_file):
 			raise FileNotFoundError(f"{check_file} does not exist. Please try again.")
 		self.hash_key = hash_key
 		self.script_path = getcwd()
 		# Reads in 64KB chunks
-		self._methods = ({"md5": md5(), "sha1": sha1(), "sha256": sha256()})
+		self._methods = ({"md5": md5(), "sha1": sha1(), "sha256": sha256(), "sha512": sha512()})
 		self.hash_generator(check_file)
 
 	def __repr__(self):
 		return self.validate()
 
 	def hash_generator(self, file_name):
-		"""self.check_file = self.check_file.replace("\\", "/")
-		drive = str(self.check_file.split("/")[0])
-		file_name = str(self.check_file.split("/")[-1])
-		file_path = join(self.check_file.strip(file_name))
-		if str(file_path.split("/")[0]) != drive:
-			file_path = str(drive.strip(":") + file_path)
-		if file_path != file_name:
-			chdir(file_path)"""
 		with open(file_name, "rb") as file:
 			while True:
 				data = file.read(self.BUF_SIZE)
@@ -70,7 +62,8 @@ class HashCheck(object):
 		return cls(check_file, hash_key)
 
 
-if __name__ == "__main__":
+def main():
+	from sys import argv
 	if len(argv) == 2:
 		hash_check = HashCheck(argv[1], None)
 	elif len(argv) == 3:
@@ -78,3 +71,7 @@ if __name__ == "__main__":
 	else:
 		hash_check = HashCheck.create()
 	print(hash_check)
+
+
+if __name__ == "__main__":
+	main()
