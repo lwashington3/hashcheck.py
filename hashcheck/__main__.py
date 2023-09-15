@@ -12,9 +12,9 @@ class HashCheck(object):
 		if not isfile(check_file):
 			raise FileNotFoundError(f"{check_file} does not exist. Please try again.")
 		self.hash_key = hash_key
-		if hash_key.is_upper():
+		if hash_key.isupper():
 			self.upper = True
-		elif hash_key.is_lower():
+		elif hash_key.islower():
 			self.lower = True
 		else:
 			self.upper = True

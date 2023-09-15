@@ -11,7 +11,7 @@ git_url = "https://github.com/lwashington3/hashcheck.py"
 
 setup(
 	name=project_name,
-	version="1.0.2",
+	version="1.0.3",
 	author="Len Washington III",
 	description="File Hash Checker",
 	include_package_data=True,
