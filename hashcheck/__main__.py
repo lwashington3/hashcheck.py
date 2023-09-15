@@ -5,13 +5,20 @@ from tabulate import tabulate
 class HashCheck(object):
 	BUF_SIZE = 65_536
 
-	def __init__(self, check_file, hash_key):
+	def __init__(self, check_file, hash_key:str):
 		from os.path import isfile
 		from os import getcwd
 
 		if not isfile(check_file):
 			raise FileNotFoundError(f"{check_file} does not exist. Please try again.")
 		self.hash_key = hash_key
+		if hash_key.is_upper():
+			self.upper = True
+		elif hash_key.is_lower():
+			self.lower = True
+		else:
+			self.upper = True
+
 		self.script_path = getcwd()
 		# Reads in 64KB chunks
 		self._methods = ({"md5": md5(), "sha1": sha1(), "sha256": sha256(), "sha512": sha512()})
@@ -19,6 +26,12 @@ class HashCheck(object):
 
 	def __repr__(self):
 		return self.validate()
+
+	def format_hex(self, hexdigest):
+		hexdigest = str(hexdigest)
+		if self.upper:
+			return hexdigest.upper()
+		return hexdigest.lower()
 
 	def hash_generator(self, file_name):
 		with open(file_name, "rb") as file:
@@ -30,7 +43,7 @@ class HashCheck(object):
 					method.update(data)
 
 	def validate(self):
-		lst = [(name, str(method.hexdigest())) for name,method in self._methods.items()]
+		lst = [(name, self.format_hex(method.hexdigest())) for name, method in self._methods.items()]
 		if self.hash_key is None:
 			table = [[f"{other[0]}sum", other[1]] for other in lst]
 			return tabulate(table, headers="firstrow", tablefmt="grid")
